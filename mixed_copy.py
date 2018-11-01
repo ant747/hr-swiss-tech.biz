@@ -1,4 +1,5 @@
 import sys
+import os
 import shutil
 import io
 
@@ -7,7 +8,10 @@ import io
 def mixed_copy(f_src, f_dest):
     assert len(f_src) <= 1024, 'Source path must contain <= 1024 symbols'
     assert len(f_dest) <= 3096, 'Destination path must contain <= 3096 symbols'
+
     if sys.platform == 'win32':
+        if os.path.isdir(f_dest):
+            f_dest = os.path.join(f_dest, os.path.basename(f_src))
         b = bytearray(16 * 1024 * 1024)
         prefix = '\\\\?\\'
         with io.open(prefix + f_src, "rb") as in_file:
@@ -17,9 +21,10 @@ def mixed_copy(f_src, f_dest):
                     if not numread:
                         break
                     out_file.write(b)
-        shutil.copymode(f_src, f_dest)
+        shutil.copymode(prefix + f_src, prefix + f_dest)
     else:
         shutil.copy(f_src, f_dest)
+
 
 if __name__ == "__main__":
     mixed_copy(sys.argv[1], sys.argv[2])
