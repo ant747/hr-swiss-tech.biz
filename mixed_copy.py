@@ -4,7 +4,6 @@ if sys.platform == 'win32':
 import os
 import shutil
 import io
-import pdb
 
 
 def mixed_copy(f_src, f_dest):
@@ -24,7 +23,7 @@ def mixed_copy(f_src, f_dest):
                     numread = in_file.readinto(b)
                     if not numread:
                         break
-                    out_file.write(b)
+                    out_file.write(b[:numread])
         shutil.copymode(prefix + f_src, prefix + f_dest)
     else:
         shutil.copy(f_src, f_dest)
